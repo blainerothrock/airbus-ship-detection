@@ -91,7 +91,7 @@ def masks_as_image(in_mask_list):
     return np.expand_dims(all_masks, -1)
 
     # custom image generator
-def make_image_gen(in_df, params):
+def make_image_gen(in_df, params, train_image_dir):
     all_batches = list(in_df.groupby('ImageId'))
     out_rgb = []
     out_mask = []
@@ -110,7 +110,7 @@ def make_image_gen(in_df, params):
                 yield np.stack(out_rgb, 0)/255.0, np.stack(out_mask, 0)
                 out_rgb, out_mask=[], []
 
-def create_aug_gen(in_gen, seed = None):
+def create_aug_gen(in_gen, image_gen, label_gen, seed = None):
     np.random.seed(seed if seed is not None else np.random.choice(range(9999)))
     for in_x, in_y in in_gen:
         seed = np.random.choice(range(9999))
