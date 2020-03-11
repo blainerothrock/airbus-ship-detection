@@ -24,7 +24,7 @@ from tensorflow.keras.losses import binary_crossentropy
 
 
 
-def agg_ship_count(seg):
+def agg_ship_count(seg, train_image_dir):
     seg['ship_count'] = seg['EncodedPixels'].map(lambda x: 1 if isinstance(x, str) else 0)
     seg.sample(10)
 
@@ -91,7 +91,7 @@ def masks_as_image(in_mask_list):
     return np.expand_dims(all_masks, -1)
 
     # custom image generator
-def make_image_gen(in_df, params = unet_params):
+def make_image_gen(in_df, params):
     all_batches = list(in_df.groupby('ImageId'))
     out_rgb = []
     out_mask = []
