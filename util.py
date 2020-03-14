@@ -137,6 +137,7 @@ def pool(in_layer, name, pool_size=(2, 2)):
 def conv_up(filter_, in_layer, conv_down_layer, name, upsample_size=(2, 2), kernel=(3, 3), activation='relu', padding='same'):
     l = UpSampling2D(upsample_size, name=name+'_upsample')(in_layer)
     l = concatenate([l, conv_down_layer], name=name+'_concat')
+    l = Dropout(0.2)(l)
     l = Conv2D(filter_, kernel, activation=activation, padding=padding, name=name+'_conv1')(l)
     l = Conv2D(filter_, kernel, activation=activation, padding=padding, name=name+'_conv2')(l)
     return l
@@ -145,3 +146,27 @@ def dice_coef(y_true, y_pred, smooth=1):
     intersection = K.sum(y_true * y_pred, axis=[1,2,3])
     union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3])
     return K.mean( (2. * intersection + smooth) / (union + smooth), axis=0)
+
+def plot_accurary_and_loss(history, name):
+    acc = history.history['accuracy']
+    val_acc = history.history['val_accuracy']
+
+    loss=history.history['loss']
+    val_loss=history.history['val_loss']
+
+    epochs_range = range(len(history.history['loss']))
+
+    plt.figure(figsize=(8, 8))
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs_range, acc, label='Training Accuracy')
+    plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+    plt.legend(loc='lower right')
+    plt.title('Training and Validation Accuracy')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs_range, loss, label='Training Loss')
+    plt.plot(epochs_range, val_loss, label='Validation Loss')
+    plt.legend(loc='upper right')
+    plt.title('Training and Validation Loss')
+    plt.savefig('images/{}.png'.format(name))
+    plt.show()
